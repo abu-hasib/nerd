@@ -7,6 +7,6 @@ export type ResponseData = {
     name: string;
     population: number;
     request: object;
-    location: object;
-    current: object;
+    location: {name: string, localtime: string, };
+    current: {weather_icons: string, temperature: string};
   };

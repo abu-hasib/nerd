@@ -7,7 +7,7 @@ interface WeatherCardProps {
   setFavorites?: Dispatch<SetStateAction<ResponseData[]>>;
 }
 
-function Favorite({ data, setFavorites }: WeatherCardProps) {
+function Favorite({ data }: WeatherCardProps) {
   return (
     <div
       className="p-2 bg-primary rounded-[24px] hover:bg-transparent hover:border hover:border-[#b7ddf7] transition-all relative"

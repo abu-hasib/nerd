@@ -1,10 +1,9 @@
-// @ts-ignore
+// @ts-nocheck
+import { ResponseData } from "../types";
+
 export const debounce = (callback, wait) => {
-  // @ts-ignore
   let timeoutId = null;
-  // @ts-ignore
   return (...args) => {
-    // @ts-ignore
     window.clearTimeout(timeoutId);
     timeoutId = window.setTimeout(() => {
       callback.apply(null, args);
@@ -12,7 +11,6 @@ export const debounce = (callback, wait) => {
   };
 };
 
-
-export function compare(a, b) {
+export function compare(a: ResponseData, b: ResponseData) {
   return a.location.name.localeCompare(b.location.name);
 }

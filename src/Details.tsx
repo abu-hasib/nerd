@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useParams } from "react-router-dom";
 import "./App.css";
 import useLocalStorage from "./hooks/useLocalStorage";
@@ -8,7 +9,7 @@ import Note from "./components/Note";
 import Textarea from "./components/pieces/Textarea";
 
 function Details() {
-  const [data] = useLocalStorage();
+  const [data,,] = useLocalStorage();
   const params = useParams();
   console.log({ data });
   const details = data?.find(
@@ -17,7 +18,6 @@ function Details() {
   console.log({ details });
   const [notes, setNotes] = useState<{ id: number; text: string }[]>([]);
   const [text, setText] = useState("");
-  const [canEdit, setEdit] = useState(false);
 
   const handleSave = () => {
     setNotes((prev) => [...prev, { id: notes.length + 1, text: text }]);

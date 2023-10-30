@@ -3,10 +3,10 @@ import { ResponseData } from "../types";
 import { opsURL, wsURL } from "../lib/constants";
 
 export default function useLocalStorage() {
-  const [state, setState] = React.useState(() =>
+  const [state,,] = React.useState(() =>
     window.localStorage.getItem("data")
   );
-  const [data, setData] = React.useState<ResponseData[]>(
+  const [data, setData] = React.useState<Array<ResponseData>>(
     () => JSON.parse(state!) || []
   );
 
@@ -16,7 +16,7 @@ export default function useLocalStorage() {
       const { results } = await res.json();
       console.log({ results });
       const mappedData = await Promise.all(
-        results.map(async (el: any, i: number) => {
+        results.map(async (el: ResponseData, i: number) => {
           const res = await fetch(
             `${wsURL}?access_key=${import.meta.env.VITE_AK}&query=${el.name}`
           );

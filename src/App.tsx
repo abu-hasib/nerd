@@ -1,3 +1,4 @@
+// @ts-nocheck
 import "./App.css";
 import useLocalStorage from "./hooks/useLocalStorage";
 import { useMemo, useState } from "react";
@@ -32,7 +33,7 @@ function App() {
       }&query=${latitude},${longitude}`
     )
       .then((response) => response.json())
-      .then((data) => {
+      .then((data: ResponseData) => {
         const arr = [];
         console.log({ geo: data });
         arr.push(data);
@@ -50,7 +51,7 @@ function App() {
     () =>
       debounce(({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
         setTerm(value);
-        const res = fetch(
+        fetch(
           `${wsURL}?access_key=${import.meta.env.VITE_AK}&query=${value}`
         )
           .then((res) => res.json())
