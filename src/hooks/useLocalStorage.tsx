@@ -1,37 +1,24 @@
 import React from "react";
-
-export type DataObj = {
-  geoname_id: string;
-  name: string;
-  population: number;
-  request: unknown;
-  location: unknown;
-  current: unknown;
-};
+import { ResponseData } from "../types";
+import { opsURL, wsURL } from "../lib/constants";
 
 export default function useLocalStorage() {
   const [state, setState] = React.useState(() =>
     window.localStorage.getItem("data")
   );
-  const [data, setData] = React.useState<DataObj[] | DataObj>(
+  const [data, setData] = React.useState<ResponseData[]>(
     () => JSON.parse(state!) || []
   );
 
-  console.log({ use: data });
-
-  console.log({ state });
-
   React.useEffect(() => {
     async function fetchData() {
-      const res = await fetch(
-        "https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/geonames-all-cities-with-a-population-500/records?select=geoname_id%2C%20name%2C%20population&order_by=population%20DESC%2C%20name%20ASC&limit=3"
-      );
+      const res = await fetch(`${opsURL}`);
       const { results } = await res.json();
       console.log({ results });
       const mappedData = await Promise.all(
         results.map(async (el: any, i: number) => {
           const res = await fetch(
-            `http://api.weatherstack.com/current?access_key=eab9e72468966111cf6634cc7c3c38c4&query=${el.name}`
+            `${wsURL}?access_key=${import.meta.env.VITE_AK}&query=${el.name}`
           );
           const json = await res.json();
           results[i] = { ...results[i], ...json };
@@ -42,7 +29,6 @@ export default function useLocalStorage() {
       setData(mappedData);
       window.localStorage.setItem("data", JSON.stringify(mappedData));
     }
-    console.log("hellp");
     if (!state) fetchData();
   }, [state]);
 

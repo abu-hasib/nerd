@@ -41,7 +41,7 @@ function Details() {
   };
   return (
     <main className="h-screen gap-8 p-8 flex justify-between">
-      <div className="flex flex-col space-y-12 p-4 w-[70%] border border-[#7c8797ff] rounded-[16px]">
+      <div className="flex flex-col space-y-12 p-4 w-[70%] border border-primary-100 rounded-[16px]">
         <section className="flex items-center justify-between pr-12 pl-4">
           <div className="flex flex-col px-8 gap-8">
             <div className="">
@@ -70,7 +70,7 @@ function Details() {
           <StatsCard
             icon="humidity"
             stat="humidity"
-            value={details.current.humidity}
+            value={`${details.current.humidity} %`}
           />
           <StatsCard
             icon="temperature"
@@ -90,7 +90,7 @@ function Details() {
         </section>
       </div>
 
-      <div className="outline-blue-500 outline p-8 space-y-4">
+      <div className="border border-primary-100 rounded-[16px] p-8 space-y-4">
         <section className="">
           <Textarea
             value={text}
@@ -98,14 +98,11 @@ function Details() {
               setText(e.target.value)
             }
           />
-          <label htmlFor="note" className="sr-only">
-            Add note{" "}
-          </label>
           <Button disabled={!text?.length} onClick={() => handleSave()}>
             Save
           </Button>
         </section>
-        <section className="space-y-2 border border-primary p-4 rounded-[12px] divide-y-1">
+        <section className="space-y-2 border border-primary p-4 rounded-[16px] divide-y-1">
           {notes.length
             ? notes.map((note) => (
                 <Note

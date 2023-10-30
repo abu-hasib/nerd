@@ -6,6 +6,7 @@ export default {
       colors: {
         primary: {
           DEFAULT: "var(--clr-primary)",
+          100: "var(--clr-primary-10)"
         },
       },
     },

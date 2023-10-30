@@ -1,69 +1,112 @@
-import { Link } from "react-router-dom";
 import "./App.css";
-import useLocalStorage, { DataObj } from "./hooks/useLocalStorage";
-import { useState } from "react";
+import useLocalStorage from "./hooks/useLocalStorage";
+import { useMemo, useState } from "react";
+import { ResponseData } from "./types";
+import WeatherCard from "./components/WeatherCard";
+import Favorite from "./components/Favorite";
+import { compare, debounce } from "./lib/utils";
+import Button from "./components/pieces/Button";
+import { wsURL } from "./lib/constants";
 
 function App() {
   const [data, setData] = useLocalStorage();
   const [searchTerm, setTerm] = useState("");
-  const [results, setResults] = useState<any>({});
-  // console.log({ data });
-  const handleDelete = (item: keyof typeof data) => {
-    const filteredItems = data.filter((el) => el !== item);
-    setData(filteredItems);
-    console.log({ filteredItems });
-  };
-  const handleSearch = (e) => {
-    e.preventDefault();
-    const data = fetch(
-      `http://api.weatherstack.com/current?access_key=eab9e72468966111cf6634cc7c3c38c4&query=${searchTerm}`
+  const [favorites, setFavorites] = useState<ResponseData[]>([]);
+
+  function handleLocationClick() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(success, error);
+    } else {
+      console.log("Geolocation not supported");
+    }
+  }
+
+  function success(position) {
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+    console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+
+    fetch(
+      `${wsURL}?access_key=${
+        import.meta.env.VITE_AK
+      }&query=${latitude},${longitude}`
     )
-      .then((res) => res.json())
-      .then((data) => setResults(data));
-    console.log({ data });
-    
-    setTerm("");
-  };
+      .then((response) => response.json())
+      .then((data) => {
+        const arr = [];
+        console.log({ geo: data });
+        arr.push(data);
+        setData(arr);
+        console.log(data);
+      })
+      .catch((error) => console.log(error));
+  }
+
+  function error() {
+    console.log("Unable to retrieve your location");
+  }
+
+  const handleSearch = useMemo(
+    () =>
+      debounce(({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
+        setTerm(value);
+        const res = fetch(
+          `${wsURL}?access_key=${import.meta.env.VITE_AK}&query=${value}`
+        )
+          .then((res) => res.json())
+          .then((data) => {
+            const arr = [];
+            arr.push(data);
+            return setData(arr);
+          })
+          .catch((err) => console.error(err));
+      }, 1500),
+    [searchTerm]
+  );
   return (
-    <main className="grid p-4 gap-4">
-      <form className="max-w-[792px]" onSubmit={handleSearch}>
-        <input
-          className="border border-primary bg-primary rounded-[16px] px-8 py-4 w-full focus:outline-0 focus:border-0"
-          type="text"
-          name="search"
-          placeholder="Search for cities"
-          value={searchTerm}
-          onChange={(e) => setTerm(e.target.value)}
-        />
-        <button type="submit">Search</button>
-      </form>
-      <div className="grid gap-4">
-        {data.length
-          ? data.map((el: DataObj) => (
-              <Link
-                className="p-8 flex justify-between items-center bg-primary rounded-[24px] max-w-[792px] hover:bg-transparent hover:border hover:border-[#b7ddf7] transition-all"
-                to={el.geoname_id}
-                key={el.geoname_id}
-              >
-                <div className="flex gap-6 items-center">
-                  <img
-                    className="rounded-full max-h-full max-w-full"
-                    src={el.current.weather_icons}
-                    alt=""
+    <main className="grid p-8 gap-4 space-y-8">
+      <div className="flex items-center gap-4">
+        <form className="max-w-[792px] flex-1" onSubmit={handleSearch}>
+          <input
+            className="border border-primary bg-primary rounded-[16px] px-8 py-4 w-full focus:outline-0 focus:border-0 flex-1"
+            type="text"
+            name="search"
+            placeholder="Search for cities"
+            // value={searchTerm}
+            onChange={handleSearch}
+          />
+        </form>
+        <Button onClick={handleLocationClick}>Get Yours</Button>
+      </div>
+
+      <div className="flex gap-4 justify-between">
+        <section className="flex flex-col gap-4 w-[70%]">
+          {data.length
+            ? data
+                .sort(compare)
+                .map((el: ResponseData) => (
+                  <WeatherCard
+                    key={el.geoname_id}
+                    data={el}
+                    setFavorites={setFavorites}
+                    setData={setData}
+                    payload={data}
                   />
-                  <div>
-                    <h1 className="text-[#202b3bff] text-[32px] font-semibold">
-                      {el.name}
-                    </h1>
-                    <p>Population: {el.population}</p>
-                    <p>{el.location.localtime}</p>
-                  </div>
-                </div>
-                <p className="text-4xl">{el.current?.temperature}°</p>
-                {/* <p onClick={() => handleDelete(el)}>Delete</p> */}
-              </Link>
-            ))
-          : null}
+                ))
+            : null}
+        </section>
+        <section className="border border-primary-100 p-4 w-[30%] rounded-[16px] ">
+          <h3 className="font-semibold  text-2xl">Favorites</h3>
+          <div className="flex flex-col gap-3">
+            {favorites.length
+              ? favorites
+                  .sort(compare)
+                  .map((favorite) => (
+                    <Favorite data={favorite} key={favorite.geoname_id} />
+                  ))
+              : null}
+          </div>
+        </section>
       </div>
     </main>
   );
