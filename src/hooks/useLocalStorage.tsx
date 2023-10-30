@@ -1,6 +1,6 @@
 import React from "react";
 
-type DataObj = {
+export type DataObj = {
   geoname_id: string;
   name: string;
   population: number;
@@ -13,7 +13,7 @@ export default function useLocalStorage() {
   const [state, setState] = React.useState(() =>
     window.localStorage.getItem("data")
   );
-  const [data, setData] = React.useState<DataObj[]>(
+  const [data, setData] = React.useState<DataObj[] | DataObj>(
     () => JSON.parse(state!) || []
   );
 
