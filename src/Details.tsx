@@ -11,9 +11,8 @@ import Textarea from "./components/pieces/Textarea";
 function Details() {
   const [data,,] = useLocalStorage();
   const params = useParams();
-  console.log({ data });
   const details = data?.find(
-    (el: { geoname_id: string | undefined }) => el.geoname_id === params.id
+    (el: { id: string | undefined }) => el.id == params.id
   );
   console.log({ details });
   const [notes, setNotes] = useState<{ id: number; text: string }[]>([]);
@@ -40,8 +39,8 @@ function Details() {
     setNotes(temp);
   };
   return (
-    <main className="h-screen gap-8 p-8 flex justify-between">
-      <div className="flex flex-col space-y-12 p-4 w-[70%] border border-primary-100 rounded-[16px]">
+    <main className="h-screen gap-8 p-8 flex flex-col lg:flex-row justify-between">
+      <div className="flex flex-col space-y-12 p-4 lg:w-[70%] border border-primary-100 rounded-[16px]">
         <section className="flex items-center justify-between pr-12 pl-4">
           <div className="flex flex-col px-8 gap-8">
             <div className="">
@@ -49,17 +48,17 @@ function Details() {
                 {details.name}
               </h1>
               <p className="text-[#9399a2ff]">
-                Description: {details.current.weather_descriptions}
+                Description: {details.weather[0].description}
               </p>
             </div>
             <p className="text-[64px] leading-[72px] font-semibold">
-              {details.current.temperature}°
+              {details.main.temp}°
             </p>
           </div>
           <div className="rounded-full h-[200px] w-[200px]">
             <img
               className="rounded-full h-full w-full object-cover"
-              src={details.current.weather_icons}
+              src={`https://openweathermap.org/img/wn/${details.weather[0].icon}@2x.png`}
               alt=""
               loading="lazy"
             />
@@ -70,22 +69,22 @@ function Details() {
           <StatsCard
             icon="humidity"
             stat="humidity"
-            value={`${details.current.humidity} %`}
+            value={`${details.main.humidity} %`}
           />
           <StatsCard
             icon="temperature"
             stat="feels like"
-            value={`${details.current.feelslike}°`}
+            value={`${details.main.feels_like}°`}
           />
           <StatsCard
             icon="wind"
             stat="Wind speed"
-            value={`${details.current.wind_speed} km/h`}
+            value={`${details.wind.speed} km/h`}
           />
           <StatsCard
             icon="pressure"
             stat="pressure"
-            value={`${details.current.pressure} hpa`}
+            value={`${details.main.pressure} hpa`}
           />
         </section>
       </div>

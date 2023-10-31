@@ -28,9 +28,9 @@ function App() {
     console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
 
     fetch(
-      `${wsURL}?access_key=${
+      `${wsURL}?lat=${latitude}&lon=${longitude}&appid=${
         import.meta.env.VITE_AK
-      }&query=${latitude},${longitude}`
+      }`
     )
       .then((response) => response.json())
       .then((data: ResponseData) => {
@@ -52,7 +52,7 @@ function App() {
       debounce(({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
         setTerm(value);
         fetch(
-          `${wsURL}?access_key=${import.meta.env.VITE_AK}&query=${value}`
+          `${wsURL}?q=${value}&appid=${import.meta.env.VITE_AK}`
         )
           .then((res) => res.json())
           .then((data) => {
@@ -80,8 +80,8 @@ function App() {
         <Button onClick={handleLocationClick}>Get Yours</Button>
       </div>
 
-      <div className="flex gap-4 justify-between">
-        <section className="flex flex-col gap-4 w-[70%]">
+      <div className="flex flex-col md:flex-row gap-4 justify-between">
+        <section className="flex flex-col gap-4 md:w-[70%]">
           {data.length
             ? data
                 .sort(compare)
@@ -96,7 +96,7 @@ function App() {
                 ))
             : null}
         </section>
-        <section className="border border-primary-100 p-4 w-[30%] rounded-[16px] ">
+        <section className="border border-primary-100 p-4 md:w-[30%] rounded-[16px] ">
           <h3 className="font-semibold  text-2xl">Favorites</h3>
           <div className="flex flex-col gap-3">
             {favorites.length

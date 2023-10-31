@@ -4,6 +4,7 @@ export type NoteType = {
 }
 export type ResponseData = {
     geoname_id: string;
+    id: string,
     name: string;
     population: number;
     request: object;

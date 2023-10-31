@@ -12,5 +12,5 @@ export const debounce = (callback, wait) => {
 };
 
 export function compare(a: ResponseData, b: ResponseData) {
-  return a.location.name.localeCompare(b.location.name);
+  return a.name.localeCompare(b.name);
 }
